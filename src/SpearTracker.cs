@@ -141,7 +141,8 @@ namespace LeviathanSpear
             if (cam == null) { Hide(e); return; }
 
             Vector3 world = e.Drop.transform.position + Vector3.up * Plugin.IconHeight.Value;
-            Vector3 screen = cam.WorldToScreenPoint(world);
+            // Scaled: the main camera may render below screen resolution (render scale), like vanilla EnemyHud.
+            Vector3 screen = cam.WorldToScreenPointScaled(world);
             if (screen.z <= 0f) { Hide(e); return; }
 
             if (e.Root == null && !Build(e)) return;
