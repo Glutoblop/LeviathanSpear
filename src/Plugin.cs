@@ -19,7 +19,7 @@ namespace LeviathanSpear
     {
         public const string Guid = "jordan.valheim.leviathanspear";
         public const string Name = "Leviathan Spear";
-        public const string Version = "0.1.0";
+        public const string Version = "0.1.1";
 
         internal static Plugin Instance;
         internal static ConfigEntry<bool> Enabled;
