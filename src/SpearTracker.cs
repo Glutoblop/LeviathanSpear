@@ -24,6 +24,7 @@ namespace LeviathanSpear
         private static Sprite _ringSprite;
         private static Sprite _discSprite;
 
+        private readonly List<ItemDrop.ItemData> _pendingAutoEquips = new List<ItemDrop.ItemData>();
         private bool _wasDodging;
 
         internal static void Register(ItemDrop drop)
@@ -56,6 +57,7 @@ namespace LeviathanSpear
             if (!Plugin.Enabled.Value || player == null || player.IsDead() || Hud.instance == null)
             {
                 foreach (var e in Entries) Hide(e);
+                _pendingAutoEquips.Clear();
                 _wasDodging = false;
                 return;
             }
@@ -89,6 +91,17 @@ namespace LeviathanSpear
                 if (InRange(e, playerPos, radius)) Draw(e);
                 else Hide(e);
             }
+
+            // EquipItem rejects equipment changes during a dodge.
+            if (!dodging)
+            {
+                foreach (var item in _pendingAutoEquips)
+                {
+                    if (!CanAutoEquip(player)) break;
+                    player.EquipItem(item);
+                }
+                _pendingAutoEquips.Clear();
+            }
         }
 
         private static bool IsReady(Entry e) => Time.time - e.LandedAt >= Plugin.RecallDelay.Value;
@@ -97,7 +110,7 @@ namespace LeviathanSpear
             (e.Drop.transform.position - playerPos).sqrMagnitude <= radius * radius;
 
         // Same steps as Humanoid.Pickup, but into a specific empty hotbar slot (row 0).
-        private static bool TryRecall(Player player, Entry e)
+        private bool TryRecall(Player player, Entry e)
         {
             Inventory inv = player.GetInventory();
             int slot = -1;
@@ -128,10 +141,19 @@ namespace LeviathanSpear
             }
 
             ZNetScene.instance.Destroy(drop.gameObject);
+            if (item.IsWeapon() && CanAutoEquip(player))
+                _pendingAutoEquips.Add(item);
+
             player.m_pickupEffects.Create(player.transform.position, Quaternion.identity, null, 1f, -1, player.GetZDOID());
             player.Message(MessageHud.MessageType.TopLeft, "$msg_added " + item.m_shared.m_name, 1, item.GetIcon());
             return true;
         }
+
+        // Match the hand checks in Humanoid.Pickup.
+        private static bool CanAutoEquip(Player player) =>
+            player.m_rightItem == null && player.m_hiddenRightItem == null
+            && (player.m_leftItem == null || !player.m_leftItem.IsTwoHanded())
+            && (player.m_hiddenLeftItem == null || !player.m_hiddenLeftItem.IsTwoHanded());
 
         // ---- UI -------------------------------------------------------------------------------------------
 
