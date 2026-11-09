@@ -3,7 +3,7 @@
   "id": "LeviathanSpear",
   "name": "Leviathan Spear",
   "guid": "jordan.valheim.leviathanspear",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "author": "Glutoblop",
   "description": "Shows a countdown icon over spears you've thrown, then lets you dodge roll to recall them to an empty hotbar slot.",
   "repo": "Glutoblop/LeviathanSpear",
@@ -21,6 +21,7 @@
     "last_tested": "2026-11-07"
   },
   "changelog": {
+    "0.1.2": "Recalled spears now auto-equip after a dodge roll under the same conditions as a normal pickup.",
     "0.1.1": "Mod Settings button in the pause menu: change this plugin's settings in game (one tab per plugin). Fixed the spear icon not lining up with the spear when render scale is below 100%.",
     "0.1.0": "Initial release: icon with a 10 s countdown ring over thrown spears within 20 m; dodge roll to recall a ready spear to an empty hotbar slot."
   }
